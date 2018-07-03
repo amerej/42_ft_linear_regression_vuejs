@@ -15,6 +15,8 @@ export default {
     return {
       x: [],
       y: [],
+      xNorm: [],
+      yNorm: [],
       xCost: [],
       yCost: [],
       learningRate: 0.01,
@@ -104,7 +106,12 @@ export default {
             }
           }
           self.m = self.x.length
+          let minmax = self.datasetMinmax()
+          self.normalizeDataset(minmax)
+          console.log(self.x)
+          console.log(self.y)
           let res = self.gradientDescent()
+          console.log(res.theta0 + ((res.theta1 * 148000) / 10000))
           self.drawPlot(res)
           self.drawCost()
         }
@@ -153,6 +160,18 @@ export default {
         globalCost += ((theta0 + (theta1 * (this.x[i] / 10000))) - this.y[i]) * ((theta0 + (theta1 * (this.x[i] / 10000))) - this.y[i])
       }
       return (1 / (this.m)) * globalCost
+    },
+    datasetMinmax () {
+      return {
+        minX: Math.min(...this.x),
+        maxX: Math.max(...this.x),
+        minY: Math.min(...this.y),
+        maxY: Math.max(...this.y)
+      }
+    },
+    normalizeDataset (minmax) {
+      this.xNorm = this.x.map(x => (x - minmax.minX) / (minmax.maxX - minmax.minX))
+      this.yNorm = this.y.map(y => (y - minmax.minY) / (minmax.maxY - minmax.minY))
     }
   }
 }
